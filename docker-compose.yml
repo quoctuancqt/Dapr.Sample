@@ -7,7 +7,7 @@ services:
   basketservice:
     build:
       context: .
-      dockerfile: src/BasketService/Dockerfile
+      dockerfile: src/BasketService/BasketService.Api/Dockerfile
     depends_on:
       - redis
       - placement
@@ -61,7 +61,7 @@ services:
   orderservice:
     build:
       context: .
-      dockerfile: src/OrderService/Dockerfile
+      dockerfile: src/OrderService/OrderService.Api/Dockerfile
     depends_on:
       - redis
       - placement

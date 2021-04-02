@@ -17,7 +17,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "BasketService": {
+    "ProductService": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
