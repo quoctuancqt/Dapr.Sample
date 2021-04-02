@@ -1,0 +1,114 @@
+version: '3.4'
+
+services:
+  ############################
+  # Basket service + Dapr sidecar
+  ############################
+  basketservice:
+    build:
+      context: .
+      dockerfile: src/BasketService/Dockerfile
+    depends_on:
+      - redis
+      - placement
+      - zipkin
+    networks:
+      - dapr-demo
+  basketservice-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+     "-app-id", "basketservice-app",
+     "-app-port", "5000",
+     "-placement-host-address", "placement:50006",
+     "-dapr-grpc-port", "50000",
+     "-components-path", "/components",
+     "--config","/components/appconfig.yaml"]
+    volumes:
+        - "./components/:/components"
+    depends_on:
+      - basketservice
+    network_mode: "service:basketservice"
+  ############################
+  # Notification service + Dapr sidecar
+  ############################
+  notificationservice:
+    build:
+      context: .
+      dockerfile: src/NotificationService/Dockerfile
+    depends_on:
+      - redis
+      - placement
+      - zipkin
+    networks:
+      - dapr-demo
+  notificationservice-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+     "-app-id", "notificationservice-app",
+     "-app-port", "5001",
+     "-placement-host-address", "placement:50006",
+     "-dapr-grpc-port", "50001",
+     "-components-path", "/components",
+     "--config","/components/appconfig.yaml"]
+    volumes:
+        - "./components/:/components"
+    depends_on:
+      - notificationservice
+    network_mode: "service:notificationservice"
+  ############################
+  # Order service + Dapr sidecar
+  ############################
+  orderservice:
+    build:
+      context: .
+      dockerfile: src/OrderService/Dockerfile
+    depends_on:
+      - redis
+      - placement
+      - zipkin
+    networks:
+      - dapr-demo
+  orderservice-dapr:
+    image: "daprio/daprd:edge"
+    command: ["./daprd",
+     "-app-id", "orderservice-app",
+     "-app-port", "5002",
+     "-placement-host-address", "placement:50006",
+     "-dapr-grpc-port", "50002",
+     "-components-path", "/components",
+     "--config","/components/appconfig.yaml"]
+    volumes:
+        - "./components/:/components"
+    depends_on:
+      - orderservice
+    network_mode: "service:orderservice"
+  ############################
+  # Dapr placement service
+  ############################
+  placement:
+    image: "daprio/dapr"
+    command: ["./placement", "-port", "50006"]
+    ports:
+      - "50006:50006"
+    networks:
+      - dapr-demo
+  ############################
+  # Redis state store
+  ############################
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6380:6379"
+    networks:
+      - dapr-demo
+  ############################
+  # Zipkin
+  ############################
+  zipkin:
+    image: "openzipkin/zipkin"
+    ports:
+      - "9411:9411"
+    networks:
+      - dapr-demo
+networks:
+    dapr-demo:
