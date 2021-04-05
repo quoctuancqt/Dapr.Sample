@@ -1,4 +1,4 @@
-﻿using BasketService.Application.Entities;
+﻿using ProductService.Application.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using SharedKernel;
@@ -7,7 +7,11 @@ namespace ProductService.Infrastructure
 {
     public class ProductContext : ApplicationContext
     {
-        public ProductContext(DbContextOptions<ApplicationContext> options, IHttpContextAccessor _httpContextAccessor)
+        public ProductContext(DbContextOptions options) : base(options)
+        {
+        }
+
+        public ProductContext(DbContextOptions options, IHttpContextAccessor _httpContextAccessor)
             : base(options, _httpContextAccessor)
         {
         }

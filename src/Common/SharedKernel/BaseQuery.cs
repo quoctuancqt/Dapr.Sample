@@ -5,60 +5,30 @@ namespace SharedKernel
 {
     public class BaseQuery
     {
-        private int _pageIndex = 0;
+        public int PageIndex { get; set; } = 0;
 
-        private int _pageSize = 20;
-
-        private DateTime? _endDate;
-
-        public int? PageIndex
-        {
-            get
-            {
-                return _pageIndex;
-            }
-            set
-            {
-                if (value.HasValue)
-                {
-                    _pageIndex = value.Value;
-                }
-            }
-        }
-
-        public int? PageSize
-        {
-            get
-            {
-                return _pageSize;
-            }
-            set
-            {
-                if (value.HasValue)
-                {
-                    _pageSize = value.Value;
-                }
-            }
-        }
+        public int PageSize { get; set; } = 10;
 
         public string SearchText { get; set; }
 
+        public string[] SearchFields { get; set; } = Array.Empty<string>();
+
         public DateTime? StartDate { get; set; }
 
-        public DateTime? EndDate
-        {
-            get { return _endDate; }
-            set
-            {
-                if (value.HasValue)
-                {
-                    _endDate = value.Value.AddDays(1).AddTicks(-1);
-                }
-            }
-        }
+        public DateTime? EndDate { get; set; }
 
         public string[] OrderBy { get; set; } = Array.Empty<string>();
 
         public OrderingDirection Direction { get; set; } = OrderingDirection.Desc;
+
+        public virtual int GetSkip()
+        {
+            return PageIndex * PageSize;
+        }
+
+        public virtual int GetTake()
+        {
+            return PageSize;
+        }
     }
 }

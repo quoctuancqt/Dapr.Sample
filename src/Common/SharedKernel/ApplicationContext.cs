@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using SharedKernel.Extensions;
 using SharedKernel.Intefaces;
 using System;
 using System.Collections.Generic;
@@ -9,16 +10,16 @@ using System.Threading.Tasks;
 
 namespace SharedKernel
 {
-    public abstract class ApplicationContext : DbContext
+    public abstract class ApplicationContext : DbContext, IApplicationContext, IDisposable
     {
         private readonly HttpContext _httpContext;
         private string UserId { get; set; }
 
-        protected ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options)
+        protected ApplicationContext(DbContextOptions options) : base(options)
         {
         }
 
-        protected ApplicationContext(DbContextOptions<ApplicationContext> options,
+        protected ApplicationContext(DbContextOptions options,
             IHttpContextAccessor _httpContextAccessor) : base(options)
         {
             _httpContext = _httpContextAccessor?.HttpContext;
@@ -56,6 +57,27 @@ namespace SharedKernel
         public virtual async Task ExecuteSqlRawAsync(string query)
         {
             await ExecuteSqlRawAsync(query);
+        }
+
+        public DbSet<T> GetDbSet<T>() where T : BaseEntity, IBaseEntity
+        {
+            return Set<T>();
+        }
+
+        public IQueryable<T> GetQuery<T>(BaseQuery querySearch) where T : BaseEntity, IBaseEntity
+        {
+            var query = Set<T>().ApplyLikeSearch(querySearch.SearchText, querySearch.SearchFields);
+
+            if (querySearch.OrderBy.Any())
+            {
+                query = query.ApplySort(querySearch.OrderBy);
+            }
+            else
+            {
+                query = query.ApplySort(new string[] { "createdAt" });
+            };
+
+            return query;
         }
 
         private void BeforeCommit(bool isAudits = true)

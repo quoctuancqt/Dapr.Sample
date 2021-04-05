@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using SharedKernel.Intefaces;
 using System;
 
 namespace SharedKernel.Extensions
@@ -10,7 +11,7 @@ namespace SharedKernel.Extensions
     {
         public static IServiceCollection AddApplicationDbContext<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : ApplicationContext
         {
-            services.AddScoped(sp =>
+            services.AddScoped<IApplicationContext>(sp =>
             {
                 var connectString = configuration.GetConnectionString("Default");
 

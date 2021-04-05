@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BasketService.Application.Entities;
+using ProductService.Application.Entities;
 using SharedKernel.Mapping;
 using System;
 

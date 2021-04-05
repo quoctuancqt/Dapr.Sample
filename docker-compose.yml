@@ -4,20 +4,20 @@ services:
   ############################
   # Basket service + Dapr sidecar
   ############################
-  basketservice:
+  productservice:
     build:
       context: .
-      dockerfile: src/BasketService/BasketService.Api/Dockerfile
+      dockerfile: src/ProductService/ProductService.Api/Dockerfile
     depends_on:
       - redis
       - placement
       - zipkin
     networks:
       - dapr-demo
-  basketservice-dapr:
+  productservice-dapr:
     image: "daprio/daprd:edge"
     command: ["./daprd",
-     "-app-id", "basketservice-app",
+     "-app-id", "productservice-app",
      "-app-port", "5000",
      "-placement-host-address", "placement:50006",
      "-dapr-grpc-port", "50000",
@@ -26,8 +26,8 @@ services:
     volumes:
         - "./components/:/components"
     depends_on:
-      - basketservice
-    network_mode: "service:basketservice"
+      - productservice
+    network_mode: "service:productservice"
   ############################
   # Notification service + Dapr sidecar
   ############################

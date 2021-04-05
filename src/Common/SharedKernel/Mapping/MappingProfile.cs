@@ -7,9 +7,13 @@ namespace SharedKernel.Mapping
 {
     public class MappingProfile : Profile
     {
-        public MappingProfile()
+        public MappingProfile(Assembly assembly)
         {
-            ApplyMappingsFromAssembly(Assembly.GetExecutingAssembly());
+            ApplyMappingsFromAssembly(assembly);
+        }
+
+        public MappingProfile() : this(Assembly.GetExecutingAssembly())
+        {
         }
 
         private void ApplyMappingsFromAssembly(Assembly assembly)

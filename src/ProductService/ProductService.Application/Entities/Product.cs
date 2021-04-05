@@ -1,6 +1,6 @@
 ﻿using SharedKernel;
 
-namespace BasketService.Application.Entities
+namespace ProductService.Application.Entities
 {
     public class Product : BaseEntity
     {

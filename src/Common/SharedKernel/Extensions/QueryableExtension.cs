@@ -21,10 +21,11 @@ namespace SharedKernel.Extensions
 
         public static IQueryable<TResult> ApplySort<TResult>(
             this IQueryable<TResult> query,
-            string sortField,
+            string sortField = "createdAt",
             OrderingDirection sortType = OrderingDirection.Desc) where TResult : class
         {
             query = sortType == OrderingDirection.Asc ? query.OrderBy(sortField.FirstCharToUpper()) : query.OrderByDescending(sortField.FirstCharToUpper());
+
             return query;
         }
 
@@ -33,10 +34,7 @@ namespace SharedKernel.Extensions
             string[] sortFields,
             OrderingDirection sortType = OrderingDirection.Desc) where TResult : class
         {
-            if (sortFields == null || !sortFields.Any())
-            {
-                return query;
-            }
+            if (sortFields == null || !sortFields.Any()) return query;
 
             var orderedQuery = query.OrderBy(x => true);
 
@@ -55,6 +53,7 @@ namespace SharedKernel.Extensions
             }
 
             query = orderedQuery;
+
             return query;
         }
 
@@ -63,15 +62,13 @@ namespace SharedKernel.Extensions
             string searchKey,
             params string[] searchFields)
         {
-            if (string.IsNullOrEmpty(searchKey))
-            {
-                return query;
-            }
+            if (string.IsNullOrEmpty(searchKey)) return query;
 
             Expression<Func<TResult, bool>> expression = null;
             var parameterExpression = Expression.Parameter(typeof(TResult), "p");
 
             var pattern = Expression.Constant($"%{searchKey}%");
+
             foreach (var searchField in searchFields)
             {
                 Expression<Func<TResult, bool>> lambda;
@@ -104,12 +101,10 @@ namespace SharedKernel.Extensions
                 expression = expression == null ? lambda : expression.Or(lambda);
             }
 
-            if (expression == null)
-            {
-                return query;
-            }
+            if (expression == null) return query;
 
             query = query.Where(expression);
+
             return query;
         }
 
@@ -118,10 +113,7 @@ namespace SharedKernel.Extensions
             IList<TEnum> statuses,
             string filteredField)
         {
-            if (!statuses.Any())
-            {
-                return query;
-            }
+            if (!statuses.Any()) return query;
 
             Expression<Func<TResult, bool>> expression = null;
             var parameterExpression = Expression.Parameter(typeof(TResult), "p");
@@ -135,12 +127,10 @@ namespace SharedKernel.Extensions
                 expression = expression == null ? lambda : expression.Or(lambda);
             }
 
-            if (expression == null)
-            {
-                return query;
-            }
+            if (expression == null) return query;
 
             query = query.Where(expression);
+
             return query;
         }
 
@@ -149,10 +139,7 @@ namespace SharedKernel.Extensions
             string values,
             string filteredField)
         {
-            if (string.IsNullOrEmpty(values))
-            {
-                return query;
-            }
+            if (string.IsNullOrEmpty(values)) return query;
 
             Expression<Func<TResult, bool>> expression = null;
             var parameterExpression = Expression.Parameter(typeof(TResult), "p");
@@ -176,12 +163,10 @@ namespace SharedKernel.Extensions
                 expression = expression == null ? lambda : expression.Or(lambda);
             }
 
-            if (expression == null)
-            {
-                return query;
-            }
+            if (expression == null) return query;
 
             query = query.Where(expression);
+
             return query;
         }
 
@@ -190,10 +175,7 @@ namespace SharedKernel.Extensions
             string[] values,
             string filteredField)
         {
-            if (values == null || !values.Any())
-            {
-                return query;
-            }
+            if (values == null || !values.Any()) return query;
 
             Expression<Func<TResult, bool>> expression = null;
             var parameterExpression = Expression.Parameter(typeof(TResult), "p");
@@ -216,12 +198,10 @@ namespace SharedKernel.Extensions
                 expression = expression == null ? lambda : expression.Or(lambda);
             }
 
-            if (expression == null)
-            {
-                return query;
-            }
+            if (expression == null) return query;
 
             query = query.Where(expression);
+
             return query;
         }
 
