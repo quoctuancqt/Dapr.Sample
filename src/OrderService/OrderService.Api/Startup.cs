@@ -6,6 +6,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using OrderService.Infrastructure;
+using SharedKernel.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,10 +29,15 @@ namespace OrderService
         {
 
             services.AddControllers().AddDapr();
+
+            services.AddApplicationDbContext<OrderContext>(Configuration, "OrderConnectionString");
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "OrderService", Version = "v1" });
             });
+
+            services.AddApplication();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +49,8 @@ namespace OrderService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "OrderService v1"));
             }
+
+            app.UseCustomExceptionHandler(HandlerException.Handle);
 
             app.UseRouting();
 

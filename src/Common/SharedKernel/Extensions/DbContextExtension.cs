@@ -9,11 +9,11 @@ namespace SharedKernel.Extensions
 {
     public static class DbContextExtension
     {
-        public static IServiceCollection AddApplicationDbContext<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : ApplicationContext
+        public static IServiceCollection AddApplicationDbContext<TContext>(this IServiceCollection services, IConfiguration configuration, string connectionStringName = "Default") where TContext : ApplicationContext
         {
             services.AddScoped<IApplicationContext>(sp =>
             {
-                var connectString = configuration.GetConnectionString("Default");
+                var connectString = configuration.GetConnectionString(connectionStringName);
 
                 var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>().UseSqlite(connectString);
 
