@@ -21,7 +21,6 @@ namespace OrderService.Infrastructure
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Order>().HasKey(x => x.Id);
-            modelBuilder.Entity<Order>().Property(x => x.Id).ValueGeneratedOnAdd();
             modelBuilder.Entity<Order>().OwnsOne(o => o.Address, a => a.WithOwner());
 
             modelBuilder.Entity<OrderItem>().HasKey(x => x.Id);

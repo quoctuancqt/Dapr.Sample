@@ -1,22 +1,19 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using ProductService.Application.Interfaces;
-using ProductService.Infrastructure;
+using OrderService.Application.Services;
 using SharedKernel.Extensions;
 
-namespace ProductService.Api
+namespace OrderService.Api
 {
     public static class Dependencies
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            services.AddTransient<DatabaseFactory>();
-
             return services.AddServices();
         }
 
         private static IServiceCollection AddServices(this IServiceCollection services)
         {
-            services.AddProfiling<IProductService, Application.Services.ProductService>();
+            services.AddProfiling<IOrderService, Application.Services.OrderService>();
 
             return services;
         }

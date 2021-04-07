@@ -37,7 +37,7 @@ namespace ProductService
             services.AddApplication(config =>
             {
                 config.AddProfile(new MappingProfile(typeof(ProductDto).Assembly));
-            }).AddInfrastructure().AddServices();
+            }).AddInfrastructure();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -57,13 +57,10 @@ namespace ProductService
 
             app.UseRouting();
 
-            app.UseCloudEvents();
-
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapSubscribeHandler();
                 endpoints.MapControllers();
             });
         }
