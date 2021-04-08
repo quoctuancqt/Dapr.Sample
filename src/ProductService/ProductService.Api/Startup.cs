@@ -24,8 +24,11 @@ namespace ProductService
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var assembly = typeof(ProductDto).Assembly;
 
-            services.AddControllers().AddDapr();
+            services.AddControllers()
+                //.AddFluentValidation(config => config.RegisterValidatorsFromAssembly(assembly))
+                .AddDapr();
 
             services.AddApplicationDbContext<ProductContext>(Configuration);
 
@@ -36,7 +39,7 @@ namespace ProductService
 
             services.AddApplication(config =>
             {
-                config.AddProfile(new MappingProfile(typeof(ProductDto).Assembly));
+                config.AddProfile(new MappingProfile(assembly));
             }).AddInfrastructure();
         }
 

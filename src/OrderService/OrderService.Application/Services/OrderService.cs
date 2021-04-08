@@ -9,8 +9,7 @@ using SharedKernel.Exceptions;
 using SharedKernel.Extensions;
 using SharedKernel.Intefaces;
 using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrderService.Application.Services
@@ -24,18 +23,18 @@ namespace OrderService.Application.Services
 
         private readonly IApplicationContext _applicationContext;
         private readonly IMapper _mapper;
-        private readonly DaprClient _client;
+        private readonly DaprClient _dapr;
 
         public OrderService(IApplicationContext applicationContext, IMapper mapper, DaprClient client)
         {
             _applicationContext = applicationContext;
             _mapper = mapper;
-            _client = client;
+            _dapr = client;
         }
 
         public async Task<OrderDto> CheckoutAsync(string buyerId, AddressDto dto)
         {
-            var order = await _client.GetStateAsync<Order>(STORE_NAME, buyerId);
+            var order = await _dapr.GetStateAsync<Order>(STORE_NAME, buyerId);
 
             if (order == null) throw new NotFoundException();
 
@@ -47,80 +46,9 @@ namespace OrderService.Application.Services
 
             await _applicationContext.CommitAsync();
 
-            await _client.DeleteStateAsync(STORE_NAME, buyerId);
+            await _dapr.DeleteStateAsync(STORE_NAME, buyerId);
 
-            await _client.PublishEventAsync(PUBSUB_NAME, TOPIC_NAME, new { order.Id, order.Total, order.BuyerId, order.Address });
-
-            return _mapper.Map<OrderDto>(order);
-        }
-
-        public async Task<OrderDto> CreateAsync(string buyerId, CreateOrEditOrderItemDto dto)
-        {
-            var order = new Order();
-            order.SetBuyer(buyerId);
-
-            //using var client = DaprClient.CreateInvokeHttpClient("productapp");
-            //var product = await client.GetFromJsonAsync<ProductDto>($"/{dto.ProductId}");
-            var product = await _client.InvokeMethodAsync<ProductDto>(HttpMethod.Get, "productapp", dto.ProductId);
-
-            var orderItem = _mapper.Map<OrderItem>(dto);
-            orderItem.OrderId = order.Id;
-            orderItem.Price = product.Price;
-            order.AddItem(orderItem);
-
-            await _client.SaveStateAsync(STORE_NAME, buyerId, order);
-
-            return _mapper.Map<OrderDto>(order);
-        }
-
-        public async Task<OrderDto> EditAsync(string buyerId, CreateOrEditOrderItemDto dto)
-        {
-            var order = await _client.GetStateAsync<Order>(STORE_NAME, buyerId);
-
-            if (order == null) throw new NotFoundException();
-
-            using var client = DaprClient.CreateInvokeHttpClient("productapp");
-            var product = await client.GetFromJsonAsync<ProductDto>($"/{dto.ProductId}");
-
-            var orderItem = _mapper.Map<OrderItem>(dto);
-            orderItem.OrderId = order.Id;
-            orderItem.Price = product.Price;
-            order.AddItem(orderItem);
-
-            await _client.SaveStateAsync(STORE_NAME, buyerId, order);
-
-            return _mapper.Map<OrderDto>(order);
-        }
-
-        public async Task<OrderDto> GetByIdAsync(string id)
-        {
-            var order = await _applicationContext.GetDbSet<Order>().Include(x => x.Items).SingleOrDefaultAsync(x => x.Id.Equals(id));
-
-            if (order == null) throw new NotFoundException(id);
-
-            return _mapper.Map<OrderDto>(order);
-        }
-
-        public async Task RemoveAsync(string id)
-        {
-            var order = await _applicationContext.GetDbSet<Order>().FindAsync(id);
-
-            if (order == null) throw new NotFoundException(id);
-
-            _applicationContext.GetDbSet<Order>().Remove(order);
-
-            await _applicationContext.CommitAsync();
-        }
-
-        public async Task<OrderDto> RemoveItemAsync(string buyerId, string itemId)
-        {
-            var order = await _client.GetStateAsync<Order>(STORE_NAME, buyerId);
-
-            if (order == null) throw new NotFoundException();
-
-            order.RemoveItem(itemId);
-
-            await _client.SaveStateAsync(STORE_NAME, buyerId, order);
+            await _dapr.PublishEventAsync(PUBSUB_NAME, TOPIC_NAME, new { order.Id, order.Total, order.BuyerId, order.Address });
 
             return _mapper.Map<OrderDto>(order);
         }
@@ -134,6 +62,40 @@ namespace OrderService.Application.Services
             var items = await query.ApplyPaging(querySearch.GetSkip(), querySearch.GetTake()).ToListAsync();
 
             return new Pageable<OrderDto>(totalItem, querySearch.GetTake(), querySearch.PageIndex, items);
+        }
+
+        public async Task DeleteBasketAsync(string id, CancellationToken cancellationToken = default)
+        {
+            await _dapr.DeleteStateAsync(STORE_NAME, id, cancellationToken: cancellationToken);
+        }
+
+        public async Task<CustomerBasketDto> GetBasketAsync(string customerId, CancellationToken cancellationToken = default)
+        {
+            var result = await _dapr.GetStateAsync<CustomerBasketDto>(STORE_NAME, customerId, cancellationToken: cancellationToken);
+
+            return result;
+        }
+
+        public async Task<CustomerBasketDto> UpdateBasketAsync(CustomerBasketDto basket, CancellationToken cancellationToken = default)
+        {
+            var state = await _dapr.GetStateEntryAsync<CustomerBasketDto>(STORE_NAME, basket.BuyerId, cancellationToken: cancellationToken);
+
+            state.Value = basket;
+
+            await state.SaveAsync(cancellationToken: cancellationToken);
+
+            var result = await GetBasketAsync(basket.BuyerId, cancellationToken);
+
+            return result;
+        }
+
+        public async Task<OrderDto> GetByIdAsync(string id)
+        {
+            var order = await _applicationContext.GetDbSet<Order>().Include(x => x.Items).SingleOrDefaultAsync(x => x.Id.Equals(id));
+
+            if (order == null) throw new NotFoundException(id);
+
+            return _mapper.Map<OrderDto>(order);
         }
     }
 }

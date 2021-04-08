@@ -1,39 +1,41 @@
 version: '3.4'
 
 services:
-  ############################
-  # Basket service + Dapr sidecar
-  ############################
-  productapp:
+  orderservice:
     build:
       context: .
-      dockerfile: src/ProductService/ProductService.Api/Dockerfile
-    ports:
-      - "50001:80"
+      dockerfile: src/OrderService/OrderService.Api/Dockerfile
     depends_on:
       - redis
       - placement
       - zipkin
     networks:
-      - dapr-demo
-  productapp-dapr:
-    image: "daprio/daprd:edge"
-    command: ["./daprd",
-     "-app-id", "productapp",
-     "-app-port", "5001",
-     "-placement-host-address", "placement:50006",
-     "-dapr-grpc-port", "50001",
-     "-components-path", "/components",
-     "--config","/components/appconfig.yaml"]
-    volumes:
-        - "./components/:/components"
+      - darp-sample
+
+  orderservice-dapr:
+    image: "daprio/daprd:1.0.0"
+    network_mode: "service:orderservice"
     depends_on:
-      - productapp
-    network_mode: "service:productapp"
-  ############################
-  # Notification service + Dapr sidecar
-  ############################
-  notificationapp:
+        - orderservice
+
+  productservice:
+    build:
+      context: .
+      dockerfile: src/ProductService/ProductService.Api/Dockerfile
+    depends_on:
+      - redis
+      - placement
+      - zipkin
+    networks:
+      - darp-sample
+
+  productservice-dapr:
+    image: "daprio/daprd:1.0.0"
+    network_mode: "service:productservice"
+    depends_on:
+        - productservice
+
+  notificationservice:
     build:
       context: .
       dockerfile: src/NotificationService/Dockerfile
@@ -42,75 +44,37 @@ services:
       - placement
       - zipkin
     networks:
-      - dapr-demo
-  notificationapp-dapr:
-    image: "daprio/daprd:edge"
-    command: ["./daprd",
-     "-app-id", "notificationapp",
-     "-placement-host-address", "placement:50006",
-     "-components-path", "/components",
-     "--config","/components/appconfig.yaml"]
-    volumes:
-        - "./components/:/components"
+      - darp-sample
+
+  notificationservice-dapr:
+    image: "daprio/daprd:1.0.0"
+    network_mode: "service:notificationservice"
     depends_on:
-      - notificationapp
-    network_mode: "service:notificationapp"
-  ############################
-  # Order service + Dapr sidecar
-  ############################
-  orderapp:
-    build:
-      context: .
-      dockerfile: src/OrderService/OrderService.Api/Dockerfile
-    ports:
-      - "50002:80"
-    depends_on:
-      - redis
-      - placement
-      - zipkin
-    networks:
-      - dapr-demo
-  orderapp-dapr:
-    image: "daprio/daprd:edge"
-    command: ["./daprd",
-     "-app-id", "orderapp",
-     "-app-port", "5002",
-     "-placement-host-address", "placement:50006",
-     "-dapr-grpc-port", "50002",
-     "-components-path", "/components",
-     "--config","/components/appconfig.yaml"]
-    volumes:
-        - "./components/:/components"
-    depends_on:
-      - orderapp
-    network_mode: "service:orderapp"
+        - notificationservice
+
   ############################
   # Dapr placement service
   ############################
   placement:
-    image: "daprio/dapr"
-    command: ["./placement", "-port", "50006"]
-    ports:
-      - "50006:50006"
+    image: "daprio/dapr:1.0.0"
     networks:
-      - dapr-demo
+      - darp-sample
+
   ############################
   # Redis state store
   ############################
   redis:
     image: "redis:alpine"
-    ports:
-      - "6380:6379"
     networks:
-      - dapr-demo
+      - darp-sample
+
   ############################
   # Zipkin
   ############################
   zipkin:
-    image: "openzipkin/zipkin"
-    ports:
-      - "9411:9411"
+    image: "openzipkin/zipkin-slim"
     networks:
-      - dapr-demo
+      - darp-sample
+
 networks:
-    dapr-demo:
+  darp-sample:

@@ -14,6 +14,7 @@ namespace OrderService.Api
         private static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddProfiling<IOrderService, Application.Services.OrderService>();
+            //services.AddScoped<IOrderService, Application.Services.OrderService>();
 
             return services;
         }

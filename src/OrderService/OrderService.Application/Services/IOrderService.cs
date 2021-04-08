@@ -1,5 +1,6 @@
 ﻿using OrderService.Application.Dto;
 using SharedKernel;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace OrderService.Application.Services
@@ -8,10 +9,9 @@ namespace OrderService.Application.Services
     {
         Task<Pageable<OrderDto>> SearchAsync(OrderQuerySearch querySearch);
         Task<OrderDto> GetByIdAsync(string id);
-        Task<OrderDto> CreateAsync(string buyerId, CreateOrEditOrderItemDto dto);
-        Task<OrderDto> EditAsync(string buyerId, CreateOrEditOrderItemDto dto);
-        Task RemoveAsync(string id);
-        Task<OrderDto> RemoveItemAsync(string buyerId, string itemId);
+        Task<CustomerBasketDto> GetBasketAsync(string customerId, CancellationToken cancellationToken = default);
+        Task<CustomerBasketDto> UpdateBasketAsync(CustomerBasketDto basket, CancellationToken cancellationToken = default);
+        Task DeleteBasketAsync(string id, CancellationToken cancellationToken = default);
         Task<OrderDto> CheckoutAsync(string buyerId, AddressDto dto);
     }
 }

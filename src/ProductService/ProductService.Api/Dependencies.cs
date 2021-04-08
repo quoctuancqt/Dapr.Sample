@@ -17,6 +17,7 @@ namespace ProductService.Api
         private static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddProfiling<IProductService, Application.Services.ProductService>();
+            //services.AddScoped<IProductService, Application.Services.ProductService>();
 
             return services;
         }

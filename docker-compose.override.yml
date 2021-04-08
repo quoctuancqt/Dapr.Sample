@@ -1,0 +1,66 @@
+version: '3.4'
+
+services:
+  orderservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5001:80"
+      - "50001:50001"
+
+  orderservice-dapr:
+    command: ["./daprd",
+     "-app-id", "orderservice",
+     "-app-port", "80",
+     "-components-path", "/components",
+     "-dapr-grpc-port", "50001",
+     "-placement-host-address", "dapr-placement:50000",
+     "-config","/components/config.yaml"]
+    volumes:
+        - "./components/:/components"
+
+  productservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "5002:80"
+      - "50002:50002"
+
+  productservice-dapr:
+    command: ["./daprd",
+     "-app-id", "productservice",
+     "-app-port", "80",
+     "-components-path", "/components",
+     "-dapr-grpc-port", "50002",
+     "-placement-host-address", "dapr-placement:50000",
+     "-config","/components/config.yaml"]
+    volumes:
+        - "./components/:/components"
+
+  notificationservice:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "80"
+
+  notificationservice-dapr:
+    command: ["./daprd",
+     "-app-id", "notificationservice",
+     "-app-port", "80",
+     "-components-path", "/components",
+     "-config","/components/config.yaml"]
+    volumes:
+        - "./components/:/components"
+
+  placement:
+    command: ["./placement", "-port", "50000"]
+    ports:
+      - "50000:50000"
+  
+  redis:
+    ports:
+      - "6379:6379"
+
+  zipkin:
+    ports:
+      - "9411:9411"
