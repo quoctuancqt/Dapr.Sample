@@ -1,0 +1,34 @@
+### Add product to basket
+### Uses product api to get product id and price
+POST http://localhost:5001/order/basket HTTP/1.1
+content-type: application/json
+{
+  "BuyerId": "", // generate a guid
+  "Items": [
+    {
+        "ProductId": "",
+        "Quantity": 0,
+        "Price": 0
+    }
+  ]
+}
+
+### Check basket
+GET http://localhost:5001/order/basket/{buyerId}
+
+### Checkout
+POST http://localhost:5001/order/checkout HTTP/1.1
+content-type: application/json
+{
+  "BuyerId": "627cabc8-cf5b-40c6-92f7-5154e4a49854",
+  "Address": {
+    "Line1": "HCM",
+    "Line2": "",
+    "City": "HCM",
+    "Province": "HCM",
+    "Country": "Viet Nam"
+  }
+}
+
+### Check communicate using dapr client
+GET http://localhost:5001/order/product/{productId}

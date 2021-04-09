@@ -1,0 +1,5 @@
+### Get all product
+GET http://localhost:5002/product
+
+### Get product by id
+GET http://localhost:5002/product/{id}
