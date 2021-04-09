@@ -1,5 +1,19 @@
 # An example microservice using Dapr
 
+## Dapr Overview
+Dapr enables developers using any language or framework to easily write microservices. It addresses many of the challenges found that come along with distributed applications, such as:
+- How can distributed services discover each other and communicate synchronously?
+- How an they implement asynchronous messaging?
+- How can they maintain contextual information across a transaction?
+- How can they become resilient to failure?
+- How can they scale to meet fluctuating demand?
+- How are they monitored and observed?
+
+If you are new to Dapr, you may want to review following resources first:
+- [Getting started with Dapr]("https://docs.dapr.io/getting-started/")
+- [Dapr overview]("https://docs.dapr.io/concepts/overview/")
+- [Dapr quickstarts]("https://github.com/dapr/quickstarts") - a collection of simple tutorials covering Dapr's main capabilities
+
 ## Prerequisites
 [Docker](https://www.docker.com/)
 
