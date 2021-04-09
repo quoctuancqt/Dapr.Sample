@@ -10,9 +10,9 @@ namespace SharedKernel.Intefaces
     {
         DatabaseFacade Database { get; }
 
-        DbSet<T> GetDbSet<T>() where T : BaseEntity, IBaseEntity;
+        DbSet<T> GetDbSet<T>() where T : class, IBaseEntity;
 
-        IQueryable<T> GetQuery<T>(BaseQuery querySearch) where T : BaseEntity, IBaseEntity;
+        IQueryable<T> GetQuery<T>(BaseQuery querySearch) where T : class, IBaseEntity;
 
         Task ExecuteSqlRawAsync(string query);
 

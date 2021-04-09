@@ -27,7 +27,6 @@ namespace ProductService
             var assembly = typeof(ProductDto).Assembly;
 
             services.AddControllers()
-                //.AddFluentValidation(config => config.RegisterValidatorsFromAssembly(assembly))
                 .AddDapr();
 
             services.AddApplicationDbContext<ProductContext>(Configuration);

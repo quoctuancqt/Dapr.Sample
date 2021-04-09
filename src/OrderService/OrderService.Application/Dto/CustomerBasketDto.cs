@@ -6,16 +6,6 @@ namespace OrderService.Application.Dto
     {
         public string BuyerId { get; set; }
 
-        public List<BasketItemDto> Items { get; set; } = new List<BasketItemDto>();
-
-        public CustomerBasketDto()
-        {
-
-        }
-
-        public CustomerBasketDto(string customerId)
-        {
-            BuyerId = customerId;
-        }
+        public IEnumerable<BasketItemDto> Items { get; set; }
     }
 }

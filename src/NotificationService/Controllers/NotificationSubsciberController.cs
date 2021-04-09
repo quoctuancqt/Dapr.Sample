@@ -1,14 +1,18 @@
 ﻿using Dapr;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using NotificationService.Application.Events;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace NotificationService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class NotificationSubsciberController : ControllerBase
     {
+        private const string DaprPubSubName = "pubsub";
+
         private readonly ILogger<NotificationSubsciberController> _logger;
 
         public NotificationSubsciberController(ILogger<NotificationSubsciberController> logger)
@@ -16,15 +20,13 @@ namespace NotificationService.Controllers
             _logger = logger;
         }
 
-        [Topic("order-sub", "order")]
-        [HttpGet]
-        public async Task<IActionResult> Notify([FromBody] dynamic request)
+        [Topic(DaprPubSubName, "OrderCompletedIntegrationEvent")]
+        [HttpPost]
+        public async Task Notify(OrderCompletedIntegrationEvent request)
         {
-            _logger.LogInformation($"Received Product - {request.Id}");
+            _logger.LogInformation($"Order detail: {JsonSerializer.Serialize(request)}");
 
             await Task.CompletedTask;
-
-            return Ok();
         }
     }
 }

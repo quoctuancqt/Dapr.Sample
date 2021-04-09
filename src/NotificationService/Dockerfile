@@ -7,6 +7,7 @@ EXPOSE 80
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["src/NotificationService/NotificationService.csproj", "src/NotificationService/"]
+COPY ["src/Common/SharedKernel/SharedKernel.csproj", "src/Common/SharedKernel/"]
 RUN dotnet restore "src/NotificationService/NotificationService.csproj"
 COPY . .
 WORKDIR "/src/src/NotificationService"

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using OrderService.Application.Entities;
 using SharedKernel.Mapping;
 
@@ -14,7 +15,18 @@ namespace OrderService.Application.Dto
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<Address, AddressDto>();
+            profile.CreateMap<AddressDto, Address>().ReverseMap();
+        }
+    }
+
+    public class AddressDtoValidator : AbstractValidator<AddressDto>
+    {
+        public AddressDtoValidator()
+        {
+            RuleFor(x => x.Line1).NotNull().NotEmpty();
+            RuleFor(x => x.City).NotNull().NotEmpty();
+            RuleFor(x => x.Province).NotNull().NotEmpty();
+            RuleFor(x => x.Country).NotNull().NotEmpty();
         }
     }
 }

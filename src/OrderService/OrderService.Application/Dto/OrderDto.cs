@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using OrderService.Application.Entities;
 using SharedKernel.Mapping;
-using System.Collections.Generic;
 
 namespace OrderService.Application.Dto
 {
@@ -11,7 +10,6 @@ namespace OrderService.Application.Dto
         public decimal Total { get; set; }
         public AddressDto Address { get; set; }
         public string Status { get; set; }
-        public virtual ICollection<OrderItemDto> Items { get; set; }
 
         public void Mapping(Profile profile)
         {

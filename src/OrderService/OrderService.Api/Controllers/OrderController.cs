@@ -24,16 +24,18 @@ namespace OrderService.Controllers
         public async Task<IActionResult> GetById(string id)
             => Ok(await _service.GetByIdAsync(id));
 
-        [HttpPut(":checkout")]
-        public async Task<IActionResult> CheckoutOrder(string buyerId, [FromBody] AddressDto dto)
-            => Ok(await _service.CheckoutAsync(buyerId, dto));
+        [HttpPost("checkout")]
+        public async Task<IActionResult> CheckoutOrder([FromBody] CheckoutDto dto)
+            => Ok(await _service.CheckoutAsync(dto.BuyerId, dto.Address));
 
         [HttpGet("basket/{id}")]
         public async Task<ActionResult<CustomerBasketDto>> GetBasketByIdAsync(string id)
         {
             var basket = await _service.GetBasketAsync(id);
 
-            return Ok(basket ?? new CustomerBasketDto(id));
+            if (basket == null) return NotFound();
+
+            return Ok(basket);
         }
 
         [HttpPost("basket")]

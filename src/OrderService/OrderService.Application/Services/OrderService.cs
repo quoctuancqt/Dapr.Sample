@@ -4,10 +4,13 @@ using Dapr.Client;
 using Microsoft.EntityFrameworkCore;
 using OrderService.Application.Dto;
 using OrderService.Application.Entities;
+using OrderService.Application.Events;
 using SharedKernel;
+using SharedKernel.EventBus.Abstractions;
 using SharedKernel.Exceptions;
 using SharedKernel.Extensions;
 using SharedKernel.Intefaces;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,38 +20,53 @@ namespace OrderService.Application.Services
     public class OrderService : IOrderService
     {
         private const string STORE_NAME = "statestore";
-        private const string PUBSUB_NAME = "order-sub";
-        private const string TOPIC_NAME = "order";
-
 
         private readonly IApplicationContext _applicationContext;
         private readonly IMapper _mapper;
         private readonly DaprClient _dapr;
+        private readonly IEventBus _event;
 
-        public OrderService(IApplicationContext applicationContext, IMapper mapper, DaprClient client)
+        public OrderService(IApplicationContext applicationContext, IMapper mapper, DaprClient client, IEventBus @event)
         {
             _applicationContext = applicationContext;
             _mapper = mapper;
             _dapr = client;
+            _event = @event;
         }
 
         public async Task<OrderDto> CheckoutAsync(string buyerId, AddressDto dto)
         {
-            var order = await _dapr.GetStateAsync<Order>(STORE_NAME, buyerId);
+            var basket = await GetBasketAsync(buyerId);
 
-            if (order == null) throw new NotFoundException();
+            if (basket == null) throw new NotFoundException();
 
             var address = _mapper.Map<Address>(dto);
-            order.SetAddress(address);
-            order.CheckOut();
+
+            var order = new Order
+            {
+                BuyerId = buyerId,
+                Status = OrderStatus.Completed,
+                Address = address,
+                Total = basket.Items.Sum(x => x.Quantity * x.Price)
+            };
 
             _applicationContext.GetDbSet<Order>().Add(order);
+
+            var orderItems = basket.Items.Select(x => new OrderItem
+            {
+                OrderId = order.Id,
+                Price = x.Price,
+                ProductId = x.ProductId,
+                Quality = x.Quantity
+            }).ToList();
+
+            _applicationContext.GetDbSet<OrderItem>().AddRange(orderItems);
 
             await _applicationContext.CommitAsync();
 
             await _dapr.DeleteStateAsync(STORE_NAME, buyerId);
 
-            await _dapr.PublishEventAsync(PUBSUB_NAME, TOPIC_NAME, new { order.Id, order.Total, order.BuyerId, order.Address });
+            await _event.PublishAsync(new OrderCompletedIntegrationEvent(order.Id, order.BuyerId, order.Total, dto));
 
             return _mapper.Map<OrderDto>(order);
         }

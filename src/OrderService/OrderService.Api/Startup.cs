@@ -9,7 +9,6 @@ using OrderService.Application.Dto;
 using OrderService.Infrastructure;
 using SharedKernel.Extensions;
 using SharedKernel.Mapping;
-using System.Text.Json;
 
 namespace OrderService
 {
@@ -28,7 +27,6 @@ namespace OrderService
             var assembly = typeof(OrderDto).Assembly;
 
             services.AddControllers()
-                //.AddFluentValidation(config => config.RegisterValidatorsFromAssembly(assembly))
                 .AddDapr();
 
             services.AddApplicationDbContext<OrderContext>(Configuration, "OrderConnectionString");
@@ -45,7 +43,7 @@ namespace OrderService
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, DatabaseFactory databaseFactory)
         {
             if (env.IsDevelopment())
             {
@@ -53,6 +51,8 @@ namespace OrderService
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "OrderService v1"));
             }
+
+            databaseFactory.Migrate();
 
             app.UseCustomExceptionHandler(HandlerException.Handle);
 

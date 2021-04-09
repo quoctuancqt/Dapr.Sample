@@ -59,12 +59,12 @@ namespace SharedKernel
             await ExecuteSqlRawAsync(query);
         }
 
-        public DbSet<T> GetDbSet<T>() where T : BaseEntity, IBaseEntity
+        public DbSet<T> GetDbSet<T>() where T : class, IBaseEntity
         {
             return Set<T>();
         }
 
-        public IQueryable<T> GetQuery<T>(BaseQuery querySearch) where T : BaseEntity, IBaseEntity
+        public IQueryable<T> GetQuery<T>(BaseQuery querySearch) where T : class, IBaseEntity
         {
             var query = Set<T>().ApplyLikeSearch(querySearch.SearchText, querySearch.SearchFields);
 
