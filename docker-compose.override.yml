@@ -4,6 +4,7 @@ services:
   orderservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - Serilog__SeqServerUrl=http://seq
     ports:
       - "5001:80"
       - "50001:50001"
@@ -22,6 +23,7 @@ services:
   productservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - Serilog__SeqServerUrl=http://seq
     ports:
       - "5002:80"
       - "50002:50002"
@@ -40,6 +42,7 @@ services:
   notificationservice:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - Serilog__SeqServerUrl=http://seq
     ports:
       - "80"
 
@@ -64,3 +67,9 @@ services:
   zipkin:
     ports:
       - "9411:9411"
+
+  seq:
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - "6500:80"

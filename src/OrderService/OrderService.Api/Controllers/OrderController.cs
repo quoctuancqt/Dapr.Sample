@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Dapr.Client;
+using Microsoft.AspNetCore.Mvc;
 using OrderService.Application.Dto;
 using OrderService.Application.Services;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace OrderService.Controllers
@@ -45,5 +47,13 @@ namespace OrderService.Controllers
         [HttpDelete("basket/{id}")]
         public async Task DeleteBasketByIdAsync(string id)
             => await _service.DeleteBasketAsync(id);
+
+        // This API will use to test Service-To-Service communication
+        [HttpGet("product/{id}")]
+        public async Task<IActionResult> GetProductById(string id)
+        {
+            var client = DaprClient.CreateInvokeHttpClient("productservice");
+            return Ok(await client.GetFromJsonAsync<ProductDto>($"product/{id}"));
+        }
     }
 }

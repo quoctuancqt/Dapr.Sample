@@ -9,6 +9,7 @@ services:
       - redis
       - placement
       - zipkin
+      - seq
     networks:
       - darp-sample
 
@@ -26,6 +27,7 @@ services:
       - redis
       - placement
       - zipkin
+      - seq
     networks:
       - darp-sample
 
@@ -43,6 +45,7 @@ services:
       - redis
       - placement
       - zipkin
+      - seq
     networks:
       - darp-sample
 
@@ -73,6 +76,14 @@ services:
   ############################
   zipkin:
     image: "openzipkin/zipkin-slim"
+    networks:
+      - darp-sample
+
+  ############################
+  # Seq
+  ############################
+  seq:
+    image: datalust/seq:latest
     networks:
       - darp-sample
 
