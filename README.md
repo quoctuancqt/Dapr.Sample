@@ -10,9 +10,9 @@ Dapr enables developers using any language or framework to easily write microser
 - How are they monitored and observed?
 
 If you are new to Dapr, you may want to review following resources first:
-- [Getting started with Dapr]("https://docs.dapr.io/getting-started/")
-- [Dapr overview]("https://docs.dapr.io/concepts/overview/")
-- [Dapr quickstarts]("https://github.com/dapr/quickstarts") - a collection of simple tutorials covering Dapr's main capabilities
+- [Getting started with Dapr](https://docs.dapr.io/getting-started/)
+- [Dapr overview](https://docs.dapr.io/concepts/overview/)
+- [Dapr quickstarts](https://github.com/dapr/quickstarts) - a collection of simple tutorials covering Dapr's main capabilities
 
 ## Prerequisites
 [Docker](https://www.docker.com/)
@@ -31,11 +31,11 @@ This example defintion has the following containerized services:
 - seq
 
 ## Tracing
-Navigate to [Zipkin]("http://localhost:9411")
+Navigate to [Zipkin](http://localhost:9411)
 ![image](https://user-images.githubusercontent.com/26458668/114176036-da1c5000-9964-11eb-9992-5d9cdf7fceb0.png)
 
 ## Logging
-Navigate to [Seq]("http://localhost:6500/") to see all log
+Navigate to [Seq](http://localhost:6500/) to see all log
 ![image](https://user-images.githubusercontent.com/26458668/114175999-d38dd880-9964-11eb-8081-190d817956c3.png)
 
 ## Dapr with Docker-compose
@@ -44,7 +44,7 @@ Navigate to [Seq]("http://localhost:6500/") to see all log
 This sample demonstrates how to get Dapr running locally with Docker Compose. 
 
 ### Prerequisites
-[Docker-compose]("https://docs.docker.com/compose/install/")
+[Docker-compose](https://docs.docker.com/compose/install/)
 
 ### Networking
 Each of these services is deployed to the `darp-sample` Docker network and have their own IP on that network. Each of these services is sharing a network namespace with their associated app service by using network_mode. This means that the app and the sidecars are able to communicate over their localhost interface.
@@ -66,7 +66,7 @@ docker-compose down
 ```
 
 ### Additional Resources:
-[Overview of Docker Compose]("https://docs.docker.com/compose/")
+[Overview of Docker Compose](https://docs.docker.com/compose/)
 
 ## Dapr with Tye
 Under development
