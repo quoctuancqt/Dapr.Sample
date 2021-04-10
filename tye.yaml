@@ -1,0 +1,51 @@
+name: dapr-sample
+
+extensions:
+- name: dapr
+  log-level: debug
+  config: config
+  components-path: "./components/"
+- name: zipkin
+- name: seq
+
+services:
+- name: redis
+  image: redis:alpine
+  bindings:
+  - port: 6379
+
+- name: seq
+  image: datalust/seq:latest
+  env:
+  - name: ACCEPT_EULA
+    value: Y
+  bindings:
+  - port: 6500
+
+- name: orderservice
+  project: src/OrderService/OrderService.Api/OrderService.Api.csproj
+  bindings:
+  - port: 5001
+  env:
+  - name: Serilog__SeqServerUrl
+    value: http://seq
+  - name: ASPNETCORE_ENVIRONMENT
+    value: Development
+
+- name: productservice
+  project: src/ProductService/ProductService.Api/ProductService.Api.csproj
+  bindings:
+  - port: 5002
+  env:
+  - name: Serilog__SeqServerUrl
+    value: http://seq
+  - name: ASPNETCORE_ENVIRONMENT
+    value: Development
+
+- name: notificationservice
+  project: src/NotificationService/NotificationService.csproj
+  env:
+  - name: Serilog__SeqServerUrl
+    value: http://seq
+  - name: ASPNETCORE_ENVIRONMENT
+    value: Development
