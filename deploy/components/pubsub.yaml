@@ -13,5 +13,3 @@ spec:
     secretKeyRef:
       name: redis
       key: redis-password
-auth:
-  secretStore: kubernetes

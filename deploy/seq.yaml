@@ -1,40 +1,41 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: zipkin
+  name: seq
   namespace: default
   labels:
-    app: zipkin
+    app: seq
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: zipkin
+      app: seq
   template:
     metadata:
       labels:
-        app: zipkin
+        app: seq
     spec:
       containers:
-      - name: zipkin
-        image: openzipkin/zipkin
+      - name: seq
+        image: datalust/seq:latest
         ports:
-        - containerPort: 9411
+        - containerPort: 80
+        env:
+        - name: ACCEPT_EULA
+          value: "Y"
 
 ---
 
 kind: Service
 apiVersion: v1
 metadata:
-  name: zipkin
+  name: seq
   namespace: default
   labels:
-    app: zipkin
+    app: seq
 spec:
   selector:
-    app: zipkin
+    app: seq
   type: ClusterIP
   ports:
-  - protocol: TCP
-    port: 9411
-    targetPort: 9411
+  - port: 80
