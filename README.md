@@ -31,12 +31,12 @@ This example defintion has the following containerized services:
 - seq
 
 ## Tracing
-Navigate to [Zipkin](http://localhost:9411)
+[Zipkin](https://zipkin.io/) is a distributed tracing system. It helps gather timing data needed to troubleshoot latency problems in service architectures. Features include both the collection and lookup of this data.
 
 ![image](https://user-images.githubusercontent.com/26458668/114176036-da1c5000-9964-11eb-9992-5d9cdf7fceb0.png)
 
 ## Logging
-Navigate to [Seq](http://localhost:6500/) to see all log.
+[Seq](https://datalust.co/) is the intelligent search, analysis, and alerting server built specifically for modern structured log data.
 
 ![image](https://user-images.githubusercontent.com/26458668/114175999-d38dd880-9964-11eb-8081-190d817956c3.png)
 
