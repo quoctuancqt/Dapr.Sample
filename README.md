@@ -112,4 +112,4 @@ kubectl port-forward service/seq 6500:80
 ### Ingress Controller
 If you want to use ingress controller as a gateway. Run `deploy-ingress.ps1` then you can access [order service](http://kubernetes.docker.internal/order) and [product service](http://kubernetes.docker.internal/product).
 
-***Note:*** *Make sure there is not process uses port 80.*
+***Note:*** *Make sure there is no process uses port 80.*
