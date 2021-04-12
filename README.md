@@ -107,4 +107,7 @@ kubectl port-forward service/seq 6500:80
 ```
 
 ### Undeploy
-- Run `undeploy.ps1` to uninstall all component and services.
+- Run `undeploy-app.ps1` and `undeploy-infrastructure.ps1` to uninstall all component and services.
+
+### Ingress Controller
+If you want to use ingress controller as a gateway. Run `deploy-ingress.ps1` then you can access [order service](http://kubernetes.docker.internal/order) and [product service](http://kubernetes.docker.internal/product).

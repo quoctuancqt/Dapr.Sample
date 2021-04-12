@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: sample-dapr-ingress 
+spec:
+  rules:
+  - host: kubernetes.docker.internal
+    http:
+      paths:
+      - path: /product
+        backend:
+          serviceName: productservice
+          servicePort: 80
+      - path: /order
+        backend:
+          serviceName: orderservice
+          servicePort: 80
