@@ -74,7 +74,7 @@ namespace SharedKernel
             }
             else
             {
-                query = query.ApplySort(new string[] { "createdAt" });
+                query = query.ApplySort();
             };
 
             return query;
